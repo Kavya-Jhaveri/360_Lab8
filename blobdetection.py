@@ -58,56 +58,53 @@ inverse_s_b = [0.0001417434444, 0.0002014504432, 0.0002690341673, 0.000338066261
 # Number of observations
 N = len(distances)
 
-# Calculating sums and sum of products
+# sums and sum of products
 sum_x = sum(inverse_s_b)
 sum_y = sum(distances)
 sum_xy = sum(x*y for x, y in zip(inverse_s_b, distances))
 sum_x_squared = sum(x**2 for x in inverse_s_b)
 
-# Calculating slope (m) and intercept (b)
+# slope (m) and intercept (b)
 m = (N * sum_xy - sum_x * sum_y) / (N * sum_x_squared - sum_x**2)
 b = (sum_y - m * sum_x) / N
 def duck_location (inverse_s_b):
-    return m * inverse_s_b + b
+    return m * inverse_s_b + b
 
 while(True):
-    clock.tick() # Advances the clock
-    img = sensor.snapshot() # Takes a snapshot and saves it in memory
+    clock.tick() 
+    img = sensor.snapshot() # take pic
 
-    # Find blobs with a minimal area of 50x50 = 2500 px
-    # Overlapping blobs will be merged
-    blobs = img.find_blobs([ thresholdsGreenBall], merge=True)
-    #area_threshold=2500
+    # find blob with a minimal area of 50x50 = 2500 px
+    blobs = img.find_blobs([ thresholdsGreenBall], merge=True)
+    #area_threshold=2500
 
-    # Draw blobs
-    for blob in blobs:
-        # Draw a rectangle where the blob was found
-        img.draw_rectangle(blob.rect(), color=(0,255,0))
-        # Draw a cross in the middle of the blob
-        img.draw_cross(blob.cx(), blob.cy(), color=(0,255,0))
-        print("center of the blob (u,v): ", "(", blob.cx(),"px ,", blob.cy(), "px)")
+    # Draw blobs
+    for blob in blobs:
+        img.draw_rectangle(blob.rect(), color=(0,255,0)) #rectangle for blob
+        img.draw_cross(blob.cx(), blob.cy(), color=(0,255,0)) # center of blob
+        print("center of the blob (u,v): ", "(", blob.cx(),"px ,", blob.cy(), "px)")
 
-        area = blob.area()
-        print("area: ", area)
+        area = blob.area()
+        print("area: ", area)
 
 
-    # Turn on green LED if a blob was found
-    if len(blobs) > 0:
-        ledGreen.on()
-        ledRed.off()
-        location = duck_location(1 / (area))
-        print("location of duck / ball: ", location)
+    # Turn on green LED if a blob was found
+    if len(blobs) > 0:
+        ledGreen.on()
+        ledRed.off()
+        location = duck_location(1 / (area))
+        print("location of duck / ball: ", location)
+    
+    else:
+        # Turn the red LED = no blob was found
+        ledGreen.off()
+        ledRed.on()
 
-    else:
-    # Turn the red LED on if no blob was found
-        ledGreen.off()
-        ledRed.on()
-
-    pyb.delay(50) # Pauses the execution for 50ms
-    print(clock.fps()) # Prints the framerate to the serial console
+    pyb.delay(50) # Pauses the execution for 50ms
+    print(clock.fps()) # Prints the framerate to the serial console
 
 
-    ##    The distance from the duck to the front of the robot, d.
-    ##    The angle from the central axis to the camera to the duck \theta.
-    ##    The size of the blob s_b.
-    ##    The center of the blob in pixels, (u,v).
+#    The distance from the duck to the front of the robot, d.
+#    The angle from the central axis to the camera to the duck \theta.
+#    The size of the blob s_b.
+#    The center of the blob in pixels, (u,v).
